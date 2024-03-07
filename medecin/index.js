@@ -26,11 +26,6 @@ app.use(`${api}/medecin`, medecin);
 app.use(`${api}/region`, region);
   
 
-
-
-
-
-
 //Database
 mongoose
   .connect(process.env.CONNECTION_STRING, {

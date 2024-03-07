@@ -40,7 +40,6 @@ router.post(
 
     const file = req.file;
     if (!file) return res.status(400).send("No image in the request");
-
     const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     let medecin = new Medecin({
