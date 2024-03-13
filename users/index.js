@@ -3,15 +3,13 @@ const app = express();
 require("dotenv/config");
 const mongoose = require("mongoose");
 const morgan = require('morgan');
-const authJwt = require('./helpers/jwt');
-
+ 
 const api = process.env.API_URL;
 
 //middleware
 app.use(express.json());
 app.use(morgan('tiny'));
-app.use(authJwt());
-
+ 
 
 
 //routers
