@@ -43,8 +43,6 @@ category : {
 categoryName : {
     type: String,
     default: ''
-
-
 }
  
 

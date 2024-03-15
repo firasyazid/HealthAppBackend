@@ -43,7 +43,7 @@ router.post(
     try {
 
 
-      const categoryId = req.params.categoryId; // Récupérer l'ID de la catégorie depuis l'URL
+      const categoryId = req.params.categoryId;  
        const category = await Categories.findById(categoryId);
       if (!category) {
         return res.status(400).send("Invalid category ID");
@@ -221,6 +221,22 @@ router.get("/:id", async (req, res) => {
   res.status(200).send(user);
 });
 
+router.get('/articlesC/:categoryId', async (req, res) => {
+  const categoryId = req.params.categoryId;
+
+  try {
+     const category = await Categories.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+     const articles = await Articles.find({ category: categoryId }).populate('category');
+    res.json(articles);
+  } catch (error) {
+    console.error('Error fetching articles by category:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 module.exports = router;

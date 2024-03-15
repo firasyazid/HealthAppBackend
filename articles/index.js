@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const morgan = require('morgan');
 const api = process.env.API_URL;
 const cors = require("cors");
-
 app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 
 //middleware
