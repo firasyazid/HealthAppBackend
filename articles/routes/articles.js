@@ -90,6 +90,7 @@ router.post(
         image3: image3Url,
         category: category._id,
         categoryName: category.Categoryname,
+        source: req.body.source,
        });
 
       article = await article.save();
