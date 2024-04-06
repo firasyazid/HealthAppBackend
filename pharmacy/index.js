@@ -18,10 +18,13 @@ app.options("*", cors());
 
 const pharmacyRouter = require('./routes/pharmacy');
 const regionRouter = require('./routes/region');
+const typeRouter = require('./routes/type');
  
 //routes
 app.use(`${api}/pharmacy`, pharmacyRouter);
 app.use(`${api}/RegionPharmacy`, regionRouter);
+app.use(`${api}/type`, typeRouter);
+
     
 
 //Database

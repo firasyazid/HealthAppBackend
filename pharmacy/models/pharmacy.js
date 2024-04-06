@@ -16,7 +16,18 @@ const pharmacySchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "RegionPharmacy",
     },
-
+    type : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Type",
+    },
+    address : {
+        type : String,
+        default : ""
+    },
+    location: {
+        type: [Number],  
+        required: true
+    }
   
 });
 

@@ -3,7 +3,12 @@ const router = express.Router();
 const { Speciality } = require("../models/speciality");
 const { Medecin } = require("../models/medecin");
 const multer = require("multer");
+const axios = require('axios');
+const { OpenAI } = require("openai");
 
+const openai = new OpenAI({ apiKey: "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" });
+
+ 
 const FILE_TYPE_MAP = {
   "image/png": "png",
   "image/jpeg": "jpeg",
@@ -125,12 +130,32 @@ router.delete("/:id", (req, res) => {
 });
 
 
+router.post('/drug-interactions', async (req, res) => {
+  const { medication1, medication2 } = req.body;
+  const prompt = `
+      Interactions médicamenteuses entre ${medication1} et ${medication2} en deux phrases
+  `;
+  try {
+      const response = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: 'system', content: 'Prompt', }, { role: 'user', content: prompt, },],
+          max_tokens: 150,
+          temperature: 0.7,
+      });
+
+      if (response && response.choices && response.choices.length > 0) {
+          res.status(200).json({ response: response.choices[0].message['content'] });
+      } else {
+          res.status(500).json({ message: "No valid response from the API" });
+      }
+  } catch (error) {
+      console.error('Error creating completion:', error);
+      res.status(500).json({ message: "An error occurred" });
+  }
+});
 
 
 
-
-
-
-
+ 
 
 module.exports = router;
