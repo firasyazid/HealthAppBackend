@@ -3,12 +3,14 @@ const app = express();
 require("dotenv/config");
 const mongoose = require("mongoose");
 const morgan = require('morgan');
- 
+const cors = require("cors");
+
 const api = process.env.API_URL;
 
 //middleware
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(cors());
  
 
 

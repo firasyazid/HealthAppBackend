@@ -58,7 +58,14 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const appointments = await Appointment.find();
+    const appointments = await Appointment.find() 
+     ;
+     const modifiedAppointments = appointments.map(appointment => {
+      return {
+        ...appointment._doc,
+        userName: appointment.user_id.fullname, // Assuming 'userName' corresponds to 'fullname' of the user
+      };
+    });
     res.json(appointments);
   } catch (err) {
     console.error(err.message);

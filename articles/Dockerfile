@@ -1,6 +1,6 @@
 FROM node:18
 
-WORKDIR /usr/src/Userservice
+WORKDIR /usr/src/Articleservice
 
 COPY package*.json ./
 
