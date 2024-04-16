@@ -16,38 +16,24 @@ router.get(`/`, async (req, res) =>{
 
 
 //postt 
-router.post(`/:regionId/:typeId`, async (req, res) => {
-
-    const regionId = req.params.regionId;
-    if(!regionId) return res.status(400).send('Invalid region');
-
-    const region = await RegionPharmacy.findById(req.params.regionId);
-    if(!region) return res.status(400).send('Invalid Region');
-
-
-
-    const typeId = req.params.typeId;
-    if(!typeId) return res.status(400).send('Invalid type');
-
-const type = await Type.findById(req.params.typeId);
-if(!type) return res.status(400).send('Invalid Type');
-
+router.post('/', async (req, res) => {
+    
 
     let pharmacy = new Pharmacy({
         name: req.body.name,
         phone: req.body.phone,
-        region: regionId,
-        type: typeId,
+        region: req.body.region,
+        type: req.body.type,
         address: req.body.address,
         location: req.body.location
     });
     pharmacy = await pharmacy.save();
 
     if(!pharmacy)
-    return res.status(404).send('the pharmacy cannot be created!');
+        return res.status(404).send('the pharmacy cannot be created!');
     res.send(pharmacy);
-
 });
+
 
 
 ///get by region 
@@ -87,6 +73,22 @@ router.get('/pharmacies/:regionId/:typeId', async (req, res) => {
     }
   });
   
+
+//delete
+router.delete("/:id", async (req, res) => {
+    try {
+      const user = await Pharmacy.findByIdAndDelete(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: 'Pharmacy not found' });
+      }
+      res.status(200).json({ message: 'Pharmacy deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+  );
+
 
 module.exports = router;
 

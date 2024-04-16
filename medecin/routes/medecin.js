@@ -26,28 +26,57 @@ const storage = multer.diskStorage({
 
 const uploadOptions = multer({ storage: storage });
 
+
+
+
+router.get('/total-medecin', async (req, res) => {
+  try {
+    const result = await Medecin.aggregate([
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    if (result.length > 0) {
+      res.json({ count: result[0].count });
+    } else {
+      res.json({ count: 0 });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 //post medecin
 
 router.post(
-  "/:specialityId",
+  "/",
   uploadOptions.single("image"),
   async (req, res) => {
-    const specialityId = req.params.specialityId;
-
-    if (!specialityId)
-      return res.status(400).send("Speciality ID missing in URL");
-
-    const speciality = await Speciality.findById(specialityId);
-
-    if (!speciality) return res.status(400).send("Invalid Speciality");
-
+ 
     const file = req.file;
     if (!file) return res.status(400).send("No image in the request");
     const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     let medecin = new Medecin({
       fullname: req.body.fullname,
-      speciality: specialityId,
+      description: req.body.description,
+      speciality: req.body.speciality,
       address: req.body.address,
       phone: req.body.phone,
       image: `${basePath}${file.filename}`,
@@ -72,11 +101,6 @@ router.get(`/`, async (req, res) => {
   res.send(medecinList);
 });
 
-
-
-
-
-
 router.get(`/:id`, async (req, res) => {
   const medecin = await Medecin.findById(req.params.id).populate("speciality");
 
@@ -88,11 +112,7 @@ router.get(`/:id`, async (req, res) => {
   res.status(200).send(medecin);
 });
 
-// get medecin by speciality
-
-//need to display the medecin by speciality
-//for example all the medecin with generaliste speciality
-
+ 
 router.get("/by-category/:specialityId", async (req, res) => {
   const { specialityId } = req.params;
   try {
@@ -104,28 +124,19 @@ router.get("/by-category/:specialityId", async (req, res) => {
   }
 });
 
-router.delete("/:id", (req, res) => {
-  Medecin.findByIdAndRemove(req.params.id)
-    .then((medecin) => {
-      if (medecin) {
-        return res
-
-          .status(200)
-
-          .json({ success: true, message: "the medecin is deleted!" });
-      } else {
-        return res
-
-          .status(404)
-
-          .json({ success: false, message: "medecin not found!" });
-      }
-    })
-
-    .catch((err) => {
-      return res.status(500).json({ success: false, error: err });
-    });
-});
+router.delete("/:id", async (req, res) => {
+  try {
+    const user = await Medecin.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Medecin not found' });
+    }
+    res.status(200).json({ message: 'Medecin deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+);
 
 
 

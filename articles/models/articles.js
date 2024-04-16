@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const articleSchema = new mongoose.Schema({
 title :{ 
  type:String
@@ -45,7 +44,6 @@ categoryName : {
     default: ''
 },
 source: { 
-
     type: String,
     default: ''
 },

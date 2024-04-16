@@ -5,19 +5,16 @@ const mongoose = require('mongoose');
 const specilitySchema = new mongoose.Schema({
     description: {
         type: String,
-        required: true,
-    },
+        default: null,
+     },
     titre: {
         type: String,
         required: true,
     },
     icon : { 
-
         type: String,
         required: true,
     },
-
-    
 });
 
 specilitySchema.virtual('id').get(function () {

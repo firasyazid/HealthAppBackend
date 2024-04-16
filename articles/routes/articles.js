@@ -83,12 +83,13 @@ router.post(
       let article = new Articles({
         title: req.body.title,
         contenu: req.body.contenu,
+        description: req.body.description,
         image: `${basePath}${image.filename}`,
         video: videoUrl,
         image1: image1Url,
         image2: image2Url,
         image3: image3Url,
-        category: category._id,
+        category: categoryId,
         categoryName: category.Categoryname,
         source: req.body.source,
        });
@@ -121,23 +122,7 @@ router.get("/", async (req, res) => {
 });
 
 
-router.delete("/:id", (req, res) => {
-  Articles.findByIdAndRemove(req.params.id)
-    .then((prod) => {
-      if (prod) {
-        return res
-          .status(200)
-          .json({ success: true, message: "the Articles is deleted!" });
-      } else {
-        return res
-          .status(404)
-          .json({ success: false, message: "Articles not found!" });
-      }
-    })
-    .catch((err) => {
-      return res.status(500).json({ success: false, error: err });
-    });
-});
+ 
 
 router.get(`/get/count`, async (req, res) => {
   const userCount = await Articles.countDocuments();
@@ -236,6 +221,21 @@ router.get('/articlesC/:categoryId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching articles by category:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const user = await Articles.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Articles not found' });
+    }
+    res.status(200).json({ message: 'Articles deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

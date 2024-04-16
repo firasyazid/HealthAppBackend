@@ -13,7 +13,6 @@ router.post('/', async (req, res) => {
         Categoryname: req.body.Categoryname,
     });
     category = await category.save();
-
     if (!category) {
         return res.status(500).send('The category cannot be created');
     }
@@ -21,7 +20,19 @@ router.post('/', async (req, res) => {
 }
 );
 
-
+router.delete("/:id", async (req, res) => {
+    try {
+      const user = await Categories.findByIdAndDelete(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: 'Categories not found' });
+      }
+      res.status(200).json({ message: 'Categories deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+  );
 
 
 

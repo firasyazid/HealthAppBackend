@@ -94,4 +94,128 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+
+router.get("/confirmed", async (req, res) => {
+  try {
+    const confirmedAppointments = await Appointment.find({ status: "confirmed" });
+    res.status(200).json(confirmedAppointments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+router.get("/canceled", async (req, res) => {
+  try {
+    const confirmedAppointments = await Appointment.find({ status: "cancelled" });
+    res.status(200).json(confirmedAppointments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/:id/update-status", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    appointment.status = status;
+    await appointment.save();
+
+    res.status(200).json(appointment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+ 
+router.get('/appointments-by-month', async (req, res) => {
+  try {
+    const result = await Appointment.aggregate([
+      {
+        $project: {
+          month: { $arrayElemAt: [{ $split: ["$date", "/"] }, 1] },
+          year: { $arrayElemAt: [{ $split: ["$date", "/"] }, 2] }
+        }
+      },
+      {
+        $group: {
+          _id: { month: "$month", year: "$year" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 }
+      },
+      {
+        $project: {
+          _id: 0,
+          month: {
+            $concat: [
+              { $switch: {
+                  branches: [
+                    { case: { $eq: ["$_id.month", "01"] }, then: "January" },
+                    { case: { $eq: ["$_id.month", "02"] }, then: "February" },
+                    { case: { $eq: ["$_id.month", "03"] }, then: "March" },
+                    { case: { $eq: ["$_id.month", "04"] }, then: "April" },
+                    { case: { $eq: ["$_id.month", "05"] }, then: "May" },
+                    { case: { $eq: ["$_id.month", "06"] }, then: "June" },
+                    { case: { $eq: ["$_id.month", "07"] }, then: "July" },
+                    { case: { $eq: ["$_id.month", "08"] }, then: "August" },
+                    { case: { $eq: ["$_id.month", "09"] }, then: "September" },
+                    { case: { $eq: ["$_id.month", "10"] }, then: "October" },
+                    { case: { $eq: ["$_id.month", "11"] }, then: "November" },
+                    { case: { $eq: ["$_id.month", "12"] }, then: "December" }
+                  ],
+                  default: "Unknown"
+                }
+              },
+              ": ",
+              { $toString: "$count" }, // Convert count to string
+              " appointments"
+            ]
+          }
+        }
+      }
+    ]);
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+router.get('/total-appointments', async (req, res) => {
+  try {
+    const result = await Appointment.aggregate([
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+     if (result.length > 0) {
+      res.json({ count: result[0].count });
+    } else {
+      res.json({ count: 0 });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+ 
+
 module.exports = router;

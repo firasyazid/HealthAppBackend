@@ -16,7 +16,7 @@ router.post("/register", async (req, res) => {
   
   let user = new User({
     fullname: req.body.fullname,
-    email: req.body.email,
+    email: req.body.email,  
     passwordHash: bcrypt.hashSync(req.body.password, 10),
     isAdmin: req.body.isAdmin,
   });
@@ -53,12 +53,13 @@ router.post("/login", async (req, res) => {
         {
           userId: user.id,
           isAdmin: user.isAdmin,
+
         },
         secret,
         { expiresIn: "1d" }
       );
 
-      res.status(200).send({ user: user.email, userId: user.id, token: token });
+      res.status(200).send({ user: user.email, userId: user.id, token: token , fullname: user.fullname});
     } else {
       res.status(400).send("Password is incorrect");
     }
@@ -136,18 +137,7 @@ router.post('/forgot-password', async (req, res) => {
 
   
 
-  router.get("/:id", async (req, res) => {
-    try {
-      const user = await User.findById(req.params.id).select("fullname");
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      res.status(200).json({ fullname: user.fullname });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
+ 
   
   //delete user by id 
 
@@ -165,5 +155,39 @@ router.post('/forgot-password', async (req, res) => {
   }
   );
     
+  router.get('/total-users', async (req, res) => {
+    try {
+      const result = await User.aggregate([
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+  
+      if (result.length > 0) {
+        res.json({ count: result[0].count });
+      } else {
+        res.json({ count: 0 });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  router.get("/:id", async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id).select("fullname");
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.status(200).json({ fullname: user.fullname });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
 
 module.exports = router;
