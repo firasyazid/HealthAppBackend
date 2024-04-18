@@ -8,7 +8,39 @@ services:
     networks:
       - mynetwork
 
-   
-   
+  service2:
+     context: ./pharmacy
+     ports:
+      - "3001:3001"
+     networks:
+      - mynetwork
+
+
+
+  service3:
+    context: ./medecin
+    ports:
+      - "3002:3002"
+    networks:
+      - mynetwork
+
+  service4:
+    context: ./articles
+    ports:
+      - "3003:3003"
+    networks:
+      - mynetwork
+
+
+  service5:
+    context: ./appointments
+    ports:
+      - "3004:3004"
+    networks:
+      - mynetwork
+
+
+
 networks:
   mynetwork:
+    # Configuration du réseau
