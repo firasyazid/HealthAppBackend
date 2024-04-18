@@ -39,6 +39,13 @@ services:
     networks:
       - mynetwork
 
+  service6:
+    context: ./api_gateway
+    ports:
+      - "3005:3005"
+    networks:
+      - mynetwork
+
 
 
 networks:

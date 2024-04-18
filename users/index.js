@@ -41,7 +41,6 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
 app.listen(3003, () => console.log('Listening on port 3003'));
 
 module.exports = app;
