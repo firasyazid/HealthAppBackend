@@ -35,7 +35,7 @@ router.get(`/`, async (req, res) => {
 
   if (!userList) {
     res.status(500).json({ success: false });
-  }
+  } 
   res.send(userList);
 }
 );

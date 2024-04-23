@@ -1,4 +1,16 @@
 {
+  "name": "MedecinSrvice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Firas",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest --forceExit"
+  },
+
+
+
   "dependencies": {
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
@@ -16,5 +28,9 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.9",
     "openai": "^4.32.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
   }
 }

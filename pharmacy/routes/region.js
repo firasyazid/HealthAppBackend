@@ -16,17 +16,22 @@ router.get(`/`, async (req, res) =>{
 
 //post
 router.post(`/`, async (req, res) => {
+  if (!req.body.name) {
+      return res.status(404).send('Name is required for creating a region.');
+  }
 
-    let region = new RegionPharmacy({
-        name: req.body.name,
-    });
-    region = await region.save();
+  let region = new RegionPharmacy({
+      name: req.body.name,
+  });
+  region = await region.save();
 
-    if(!region)
-    return res.status(404).send('the region cannot be created!');
+  if (!region) {
+      return res.status(404).send('The region cannot be created!');
+  }
 
-    res.send(region);
+  res.send(region);
 });
+
 router.delete("/:id", async (req, res) => {
     try {
       const user = await RegionPharmacy.findByIdAndDelete(req.params.id);

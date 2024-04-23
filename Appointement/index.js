@@ -3,8 +3,7 @@ const app = express();
 require("dotenv/config");
 const mongoose = require("mongoose");
 const morgan = require('morgan');
-const authJwt = require('./helpers/jwt');
-const cors = require("cors");
+ const cors = require("cors");
 
 const api = process.env.API_URL;
 

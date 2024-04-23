@@ -1,46 +1,39 @@
-const express = require ('express');
+const express = require('express');
 const app = express();
-require("dotenv/config");
-const mongoose = require("mongoose");
+require('dotenv/config');
+const mongoose = require('mongoose');
 const morgan = require('morgan');
-const cors = require("cors");
+const cors = require('cors');
 const authJwt = require('./helpers/jwt');
+const serverUtils = require('./server');
 
- 
 const api = process.env.API_URL;
 
-//middleware
+// Middleware
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(cors());
 app.use(authJwt());
-  
 
-
-//routers
-const userRouter = require("./routes/user");
-//routes
+// Routers
+const userRouter = require('./routes/user');
 app.use(`${api}/users`, userRouter);
 
-
-
-
-
-
-
-//Database
+// Database connection
 mongoose
   .connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: "Health_App",
+    dbName: 'Health_App',
   })
   .then(() => {
-    console.log("Database Connection is ready...");
+    console.log('Database Connection is ready...');
   })
   .catch((err) => {
     console.log(err);
   });
-app.listen(3003, () => console.log('Listening on port 3003'));
+
+ const port = process.env.PORT || 3003;
+serverUtils.startServer(app, port);
 
 module.exports = app;
