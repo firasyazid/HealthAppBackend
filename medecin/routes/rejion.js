@@ -4,7 +4,7 @@ const router = express.Router();
   const {Region} = require('../models/region');
   const { OpenAI } = require("openai");
 
-const openai = new OpenAI({ apiKey: apiKey });
+const openai = new OpenAI({ apiKey: "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" });
 
 
 router.post('/drug-interactions/:medication1/:medication2', async (req, res) => {
