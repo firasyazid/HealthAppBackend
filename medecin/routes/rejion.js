@@ -1,4 +1,6 @@
 
+require("dotenv/config");
+ const api = process.env.apiKey;
 
 
 const express = require('express');
@@ -6,7 +8,7 @@ const router = express.Router();
   const {Region} = require('../models/region');
   const { OpenAI } = require("openai");
 
-const openai = new OpenAI({ apiKey: "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" });
+const openai = new OpenAI({ apiKey: api });
 
 
 router.post('/drug-interactions/:medication1/:medication2', async (req, res) => {
