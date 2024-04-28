@@ -40,6 +40,6 @@ mongoose
     console.log(err);
   });
 
-app.listen(3006, () => console.log('Listening on port 3006'));
+app.listen(3008, () => console.log('Listening on port 3006'));
 
 module.exports = app;

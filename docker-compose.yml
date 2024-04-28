@@ -4,14 +4,14 @@ services:
     build:
       context: ./users
     ports:
-      - "3000:3000"
+      - "3003:3003"
     networks:
       - mynetwork
 
   service2:
      context: ./pharmacy
      ports:
-      - "3001:3001"
+      - "3007:3007"
      networks:
       - mynetwork
 
@@ -20,14 +20,14 @@ services:
   service3:
     context: ./medecin
     ports:
-      - "3002:3002"
+      - "3004:3004"
     networks:
       - mynetwork
 
   service4:
     context: ./articles
     ports:
-      - "3003:3003"
+      - "3006:3006"
     networks:
       - mynetwork
 
@@ -35,14 +35,14 @@ services:
   service5:
     context: ./appointments
     ports:
-      - "3004:3004"
+      - "3006:3006"
     networks:
       - mynetwork
 
   service6:
     context: ./api_gateway
     ports:
-      - "3005:3005"
+      - "3009:3009"
     networks:
       - mynetwork
 
