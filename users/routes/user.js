@@ -19,6 +19,7 @@ router.post("/register", async (req, res) => {
     email: req.body.email,  
     passwordHash: bcrypt.hashSync(req.body.password, 10),
     isAdmin: req.body.isAdmin,
+    phone: req.body.phone,
   });
   
   user = await user.save();
@@ -98,7 +99,8 @@ router.post('/forgot-password', async (req, res) => {
         service: "gmail",
         auth: {
           user: "firasyazid4@gmail.com",
-          pass: "qdcwaeudtjhgtwsy",
+          pass: "cntnhhvujdsfzhig",
+
         },
       });
 
