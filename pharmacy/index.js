@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const api = process.env.API_URL;
 const cors = require("cors");
 app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
+const serverUtils = require('./server');
 
 //middleware
 app.use(express.json());
@@ -41,6 +42,10 @@ mongoose
     console.log(err);
   });
 
-app.listen(3007, () => console.log('Listening on port 3007'));
+let server;
+
+const port = process.env.PORT || 3007;
+ serverUtils.startServer(app, port);
+
 
 module.exports = app;

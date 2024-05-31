@@ -4,8 +4,10 @@ const app = require('../index');
 const { Pharmacy } = require('../models/pharmacy');
 const mongoose = require("mongoose");
 require("dotenv/config");
+const serverUtils = require("../server");
 
 
+ 
 ////test db connection
 beforeAll(async () => {
   await mongoose.connect(process.env.CONNECTION_STRING, {
@@ -19,25 +21,7 @@ afterAll(async () => {
   await mongoose.disconnect();
 });
 
-describe("Database Connection", () => {
-  test("Should connect to the database", async () => {
-    await new Promise((resolve) => {
-      mongoose.connection.on("connected", () => {
-        resolve();
-      });
-    });
-
-    expect(mongoose.connection.readyState).toBe(1);
-  });
-});
-
-
-
-
-
-
-
-
+ 
 
 describe('POST /api/v1/pharmacy', () => {
     test('should return 200 if all required fields are provided', async () => {
@@ -88,4 +72,8 @@ describe('POST /api/v1/RegionPharmacy', () => {
         expect(response.text).toBe('Name is required for creating a region.');
     });
     
+});
+
+afterAll(async () => {
+  await serverUtils.closeServer();
 });

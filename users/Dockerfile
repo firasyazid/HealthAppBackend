@@ -4,10 +4,10 @@ WORKDIR /usr/src/Userservice
 
 COPY package*.json ./
 
-RUN npm install && npm install -g nodemon
+RUN npm install -g jest
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3003
 
 CMD ["nodemon", "index.js"]

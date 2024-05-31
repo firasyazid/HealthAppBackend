@@ -1,14 +1,10 @@
-
-
 /// medecin testts
-const request = require('supertest');
-const app = require('../index');
-const Medecin = require('../models/medecin');
-
+const request = require("supertest");
+const app = require("../index");
+const Medecin = require("../models/medecin");
 
 const mongoose = require("mongoose");
 require("dotenv/config");
-
 
 ////test db connection
 beforeAll(async () => {
@@ -34,12 +30,11 @@ describe("Database Connection", () => {
     expect(mongoose.connection.readyState).toBe(1);
   });
 });
-  
-describe('GET /medecin', () => {
-    test('should return all medecins', async () => {
-      const response = await request(app)
-        .get('/api/v1/medecin');
-      expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
-    });
+
+describe("GET /medecin", () => {
+  test("should return all medecins", async () => {
+    const response = await request(app).get("/api/v1/medecin");
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
   });
+});

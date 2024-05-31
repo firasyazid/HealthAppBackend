@@ -3,8 +3,8 @@ const { Appointment } = require("../models/appointement");
 const express = require("express");
 const router = express.Router();
 
-const usersUri = "http://192.168.100.221:3003/api/v1/users/";
-const doctorsUri = "http://192.168.100.221:3004/api/v1/medecin/";
+const usersUri = "http://192.168.1.18:3003/api/v1/users/";
+const doctorsUri = "http://192.168.1.18:3004/api/v1/medecin/";
 
 router.post("/", async (req, res) => {
   try {

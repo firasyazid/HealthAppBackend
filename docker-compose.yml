@@ -33,7 +33,7 @@ services:
 
 
   service5:
-    context: ./appointments
+    context: ./appointment
     ports:
       - "3006:3006"
     networks:
