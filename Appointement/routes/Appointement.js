@@ -43,6 +43,7 @@ router.post("/", async (req, res) => {
       date,
       userName: user.fullname,
       doctorName: doctor.fullname,
+      doctorSpeciality: doctor.speciality,
       AppHour,
     });
     const savedAppointment = await newAppointment.save();
@@ -63,7 +64,7 @@ router.get("/", async (req, res) => {
      const modifiedAppointments = appointments.map(appointment => {
       return {
         ...appointment._doc,
-        userName: appointment.user_id.fullname, // Assuming 'userName' corresponds to 'fullname' of the user
+        userName: appointment.user_id.fullname, 
       };
     });
     res.json(appointments);
@@ -216,6 +217,55 @@ router.get('/total-appointments', async (req, res) => {
   }
 });
 
- 
+router.get('/byid/:userId/appointments', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+      const appointments = await Appointment.find({ user_id: userId }).populate('user_id', 'fullname').populate('doctor_id', 'fullname');
+
+      if (!appointments || appointments.length === 0) {
+          return res.status(404).send('No appointments found for this user');
+      }
+
+      res.send(appointments);
+  } catch (error) {
+      res.status(400).send(error.message);
+  }
+});
+
+
+
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Récupérez tous les rendez-vous pour l'utilisateur spécifié
+    const appointments = await Appointment.find({ user_id: userId });
+
+    if (appointments.length === 0) {
+      return res.status(404).send("No appointments found for this user.");
+    }
+
+    // Récupérez les informations du médecin pour chaque rendez-vous
+    const detailedAppointments = await Promise.all(
+      appointments.map(async (appointment) => {
+        const doctorResponse = await axios.get(`${doctorsUri}/${appointment.doctor_id}`);
+        const doctor = doctorResponse.data;
+        return {
+          ...appointment._doc,
+          doctorName: doctor.fullname,
+          doctorSpeciality: doctor.speciality.titre,
+        };
+      })
+    );
+
+    res.json(detailedAppointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error: " + error.message);
+  }
+});
+
+
 
 module.exports = router;

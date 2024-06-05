@@ -8,6 +8,7 @@ const authJwt = require('./helpers/jwt');
 const serverUtils = require('./server');
 
 const api = process.env.API_URL;
+app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 
 // Middleware
 app.use(express.json());

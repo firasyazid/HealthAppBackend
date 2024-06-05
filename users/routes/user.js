@@ -5,8 +5,28 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
  const generatePassword = require('generate-password');
 const nodemailer = require('nodemailer');
- 
-  
+const multer = require("multer");
+const twilio = require('twilio');
+const accountSid = 'AC83373a6f6b1e962dea96476916a1cfb1';
+const authToken = '1412262a1c371bb335303b7955ccc764';
+const client = require('twilio')(accountSid, authToken);
+const FILE_TYPE_MAP = {
+  "image/png": "png",
+  "image/jpeg": "jpeg",
+  "image/jpg": "jpg",
+};
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/uploads");
+  },
+  filename: function (req, file, cb) {
+    const fileName = file.originalname.split(" ").join("-");
+    const extension = FILE_TYPE_MAP[file.mimetype] || "file";
+    cb(null, `${fileName}-${Date.now()}.${extension}`);
+  },
+});
+const uploadOptions = multer({ storage: storage });
 
 router.post("/register", async (req, res) => {
 
@@ -181,15 +201,163 @@ router.post('/forgot-password', async (req, res) => {
   
   router.get("/:id", async (req, res) => {
     try {
-      const user = await User.findById(req.params.id).select("fullname");
+      const user = await User.findById(req.params.id).select("fullname email phone image");
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      res.status(200).json({ fullname: user.fullname });
+      res.status(200).json({ fullname: user.fullname , email: user.email , phone: user.phone , image: user.image });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server error' });
     }
   });
+
+
+
+
+  router.put(
+    "/:userId/update-image",
+    uploadOptions.single("image"),
+    async (req, res) => {
+      try {
+        const userId = req.params.userId;
+        const file = req.file;
+        const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { image: `${basePath}${file.filename}` },
+          { new: true }
+        );
+  
+        if (!updatedUser) {
+          return res.status(404).send("User not found");
+        }
+        res.send(updatedUser);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Error updating user's image");
+      }
+    }
+  );
+  router.put('/phone/:id', async (req, res) => {
+    const userId = req.params.id;
+    const { phone } = req.body;
+
+    try {
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { phone },
+            { new: true, runValidators: true }
+        );
+
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        res.send(user);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+
+/////number verification
+
+
+router.post('/send-verification-code/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  const { phoneNumber } = req.body;
+
+  try {
+       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+       const message = await client.messages.create({
+          body: 'Votre code de vérification est ' + verificationCode,
+          from: '+17745045537',
+          to: phoneNumber,
+      });
+       const user = await User.findByIdAndUpdate(
+          userId,
+          { verificationCode },
+          { new: true, runValidators: true }
+      );
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
+      res.status(200).send('Verification code sent successfully');
+  } catch (error) {
+      console.error('Error sending verification code:', error);
+      res.status(500).send('Internal server error');
+  }
+});
+
+
+///// update number
+router.put('/update-phone-number/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  const { phoneNumber, verificationCode } = req.body;
+
+  try {
+     
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
+
+      if (user.verificationCode !== verificationCode) {
+          return res.status(400).send('Invalid verification code');
+      }
+
+      user.phone = phoneNumber;
+      user.verificationCode = null;  
+
+      await user.save();
+
+      res.status(200).send('Phone number updated successfully');
+  } catch (error) {
+      console.error('Error updating phone number:', error);
+      res.status(500).send('Internal server error');
+  }
+});
+
+
+
+/// update password
+
+router.put('/update-password/:id', async (req, res) => {
+  const { id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || oldPassword.trim() === '') {
+    return res.status(400).send("Old password is required");
+  }
+
+  if (!newPassword || newPassword.trim() === '') {
+    return res.status(400).send("New password is required");
+  }
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+    if (!isMatch) {
+      return res.status(400).send("Old password is incorrect");
+    }
+
+    user.passwordHash = bcrypt.hashSync(newPassword, 10);
+    await user.save();
+
+    res.send("Password updated successfully");
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+});
+
+
 
 module.exports = router;

@@ -34,6 +34,10 @@ const appointmentSchema = new mongoose.Schema({
     day: String,
     hours: String,
   },
+  doctorSpeciality: {
+    type: String,
+    default: "",
+  },
 
 });
 

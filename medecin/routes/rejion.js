@@ -1,13 +1,13 @@
 
 const express = require('express');
 const router = express.Router();
-  const {Region} = require('../models/region');
-  const { OpenAI } = require("openai");
+const {Region} = require('../models/region');
+const { OpenAI } = require("openai");
 
-const openai = new OpenAI({ apiKey: "sk-proj-Q8PI3kFOKPJsMLhRJazuT3BlbkFJuzrECu3b1QKNQaL2Y3Kg"});
+const openai = new OpenAI({ apiKey: "sk-proj-Ul3EO47GpSCmw0uydVWyT3BlbkFJ6ICaa1x1wNesS832jS6W"});
 
 
-router.post('/drug-interactions/:medication1/:medication2', async (req, res) => {
+router.post('/drug-inssteractions/:medication1/:medication2', async (req, res) => {
     const { medication1, medication2 } = req.params;
     const prompt = `
         Interactions médicamenteuses entre ${medication1} et ${medication2} en deux phrases. si ce sont pas de medicaments dis moi.`;
