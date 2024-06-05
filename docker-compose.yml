@@ -47,6 +47,16 @@ services:
       - mynetwork
 
 
+  services7:
+    context: ./api_gateway
+    ports:
+      - "3008:3008"
+    networks:
+      - mynetwork
+
+      
+
+
 
 networks:
   mynetwork:

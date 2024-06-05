@@ -15,6 +15,6 @@ const routes = {
     app.use(route,createProxyMiddleware({target}))
 }
 
-app.listen(3009, () => console.log('Listening on port 3009'));
+app.listen(3008, () => console.log('Listening on port 3009'));
 
 module.exports = app;
